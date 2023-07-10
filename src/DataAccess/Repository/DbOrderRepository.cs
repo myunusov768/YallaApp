@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 
 namespace DataAccess;
 
-public sealed class DbOrderRepository : IDbRepository<DbOrder>, IDisposable, IDbOrderRepository
+public sealed class DbOrderRepository : IDbRepository<DbOrder>, IDbOrderRepository
 {
     public readonly string _connectionString;
     private NpgsqlConnection _npgsqlConnection;

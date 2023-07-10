@@ -4,7 +4,7 @@ using System.Data;
 
 namespace DataAccess;
 
-public sealed class DbClientRepository : IDbRepository<DbClient>,IDbClientRepository, IDisposable
+public sealed class DbClientRepository : IDbRepository<DbClient>,IDbClientRepository
 {
     private readonly string _connectionString;
     private NpgsqlConnection _connection;

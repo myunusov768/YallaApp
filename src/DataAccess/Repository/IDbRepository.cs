@@ -1,6 +1,6 @@
 namespace DataAccess;
 
-public interface IDbRepository<T>
+public interface IDbRepository<T> : IDisposable
 where T : DbEntity
 {
     public Task<bool> CreateAsync(T entity);
