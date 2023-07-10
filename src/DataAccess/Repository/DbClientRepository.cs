@@ -44,15 +44,27 @@ public sealed class DbClientRepository : IDbRepository<DbClient>,IDbClientReposi
     {
         ArgumentNullException.ThrowIfNull(id);
         await ConnectionAsync();
-        var result = await _connection.ExecuteAsync(SqlClientQuery.InsertQuery,id);
+        var result = await _connection.ExecuteAsync(SqlClientQuery.InsertQuery,new DbClient(){ Id = id });
         return result > 0 ? true : false;
     }
 
-    public async void Dispose()
+    private bool _desposing = false;
+    public async ValueTask DisposeAsync()
     {
-        if(_connection.State is not ConnectionState.Open)
-            return;
-        await _connection.CloseAsync();
+        await DisposeAsync(true);
+        GC.SuppressFinalize(this);
+    }
+    private async ValueTask DisposeAsync(bool desposing)
+    {
+        if(!_desposing)
+        {
+            if(desposing)
+            {
+                await _connection.DisposeAsync();
+            }
+        }
+        _desposing = true;
+        await ValueTask.CompletedTask;
     }
 
     public async Task<IEnumerable<DbClient>> GetAllAsync()
@@ -72,14 +84,14 @@ public sealed class DbClientRepository : IDbRepository<DbClient>,IDbClientReposi
     {
         ArgumentNullException.ThrowIfNull(numberPhone);
         await ConnectionAsync();
-        return await _connection.QueryAsync<DbClient>(SqlClientQuery.SelectByPhoneNumbereQuery,numberPhone);
+        return await _connection.QueryAsync<DbClient>(SqlClientQuery.SelectByPhoneNumbereQuery,new DbClient{ NumberPhone = numberPhone} );
     }
 
     public async Task<IEnumerable<DbClient>> GetByPhoneNumberLike(string numberPhone)
     {
         ArgumentNullException.ThrowIfNull(numberPhone);
         await ConnectionAsync();
-        return await _connection.QueryAsync<DbClient>(SqlClientQuery.SelectByNumbereLikeQuery(numberPhone),numberPhone);
+        return await _connection.QueryAsync<DbClient>(SqlClientQuery.SelectByNumbereLikeQuery(numberPhone));
     }
 
     public async Task<bool> UpdateAsync(DbClient entitie)

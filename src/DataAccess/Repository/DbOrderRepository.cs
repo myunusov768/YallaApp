@@ -52,13 +52,6 @@ public sealed class DbOrderRepository : IDbRepository<DbOrder>, IDbOrderReposito
         return result > 0 ? true : false;
     }
 
-    public async void Dispose()
-    {
-        if(_npgsqlConnection.State is not ConnectionState.Open)
-            return;
-        await _npgsqlConnection.CloseAsync();
-    }
-
     public async Task<IEnumerable<DbOrder>> GetAllAsync()
     {
         await ConnectionAsync();
@@ -87,5 +80,24 @@ public sealed class DbOrderRepository : IDbRepository<DbOrder>, IDbOrderReposito
         var result = await _npgsqlConnection.ExecuteAsync(SqlOrderQuery.UpdateQuery, entitie, transaction);
         await transaction.CommitAsync();
         return result > 0 ? true: false;
+    }
+
+    private bool _desposing = false;
+    public async ValueTask DisposeAsync()
+    {
+        await DisposeAsync(true);
+        GC.SuppressFinalize(this);
+    }
+    private async ValueTask DisposeAsync(bool desposing)
+    {
+        if(!_desposing)
+        {
+            if(desposing)
+            {
+                await _npgsqlConnection.DisposeAsync();
+            }
+        }
+        _desposing = true;
+        await ValueTask.CompletedTask;
     }
 }

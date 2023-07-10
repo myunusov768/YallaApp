@@ -15,5 +15,5 @@ public static class SqlClientQuery
     {
         return  $"select * from client where numberphone like '%{numberPhone}%';";
     } 
-    public const string SelectByPhoneNumbereQuery = "select * from client where numberphone like @'%NumberPhone%';";
+    public const string SelectByPhoneNumbereQuery = "select * from client where numberphone = @NumberPhone;";
 } 
