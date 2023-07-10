@@ -8,6 +8,5 @@ where T : DbEntity
     public Task<IEnumerable<T>> GetAllAsync();
     public Task<bool> UpdateAsync(T entitie);
     public Task<bool> DeleteAsync(long id);
-
     public Task ConnectionAsync();
 }
